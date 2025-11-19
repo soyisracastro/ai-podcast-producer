@@ -1,13 +1,14 @@
+# Entorno virtual
 venv/
 __pycache__/
-
 .env
 
+# Archivos de media (No subir a GitHub)
 *.mp3
 *.wav
 *.m4a
 *.mp4
 
+# Archivos temporales
 guia_edicion.json
-
 temp_audio.wav

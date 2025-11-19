@@ -103,7 +103,7 @@ track_host_a.export("track_host_A.mp3", format="mp3")
 track_host_b.export("track_host_B.mp3", format="mp3")
 
 # JSON para el script de video
-with open('guia_edicion.json', 'w') as f:
+with open('editing_guide.json', 'w') as f:
     json.dump(guia_video, f, indent=4)
 
 # Limpiar archivo temporal
@@ -114,4 +114,4 @@ print("\n✅ ¡PROCESO FINALIZADO CON ÉXITO!")
 print("📂 Archivos generados:")
 print("   1. track_host_A.mp3  (Subir a HeyGen -> Generar video_host_A.mp4)")
 print("   2. track_host_B.mp3  (Subir a HeyGen -> Generar video_host_B.mp4)")
-print("   3. guia_edicion.json (Usar con script 'montar_video.py')")
+print("   3. editing_guide.json (Usar con script 'montar_video.py')")
