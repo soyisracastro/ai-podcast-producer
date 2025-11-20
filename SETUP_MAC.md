@@ -106,7 +106,7 @@ numpy<2.0
 
 # Media Processing
 pydub
-moviepy
+moviepy<2.0
 imageio-ffmpeg
 
 # Utilities

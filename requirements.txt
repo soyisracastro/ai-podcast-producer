@@ -5,7 +5,7 @@ torchaudio
 
 # --- Procesamiento de Audio y Video ---
 pydub
-moviepy<2.0
+moviepy
 imageio-ffmpeg
 
 # --- Utilidades y Configuración ---
