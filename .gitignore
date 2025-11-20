@@ -10,5 +10,5 @@ __pycache__/
 *.mp4
 
 # Archivos temporales
-guia_edicion.json
+editing_guide.json
 temp_audio.wav

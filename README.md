@@ -22,6 +22,11 @@ This toolchain solves the manual bottleneck of editing conversational AI podcast
 
 ## 🛠️ Prerequisites
 
+## 🍎 macOS Users (M1/M2/M3)
+
+Running AI models locally on Apple Silicon requires a specific setup (Python 3.10 + pinned dependencies). 
+👉 **Please read [SETUP_MAC.md](SETUP_MAC.md) for detailed installation instructions.**
+
 *   **Python 3.8+**
 *   **FFmpeg** (Required for audio processing)
     *   Mac: `brew install ffmpeg`

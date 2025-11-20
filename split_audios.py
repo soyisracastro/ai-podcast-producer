@@ -3,9 +3,16 @@
 
 import os
 import json
+import warnings
 from dotenv import load_dotenv
+
+# Ignorar warnings innecesarios
+warnings.filterwarnings("ignore")
+
+
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
+from huggingface_hub import login
 
 # 1. Cargar variables de entorno (.env)
 # Esto busca el archivo .env en la misma carpeta y carga HF_TOKEN
@@ -36,12 +43,17 @@ except Exception as e:
 # 3. Cargar el modelo de IA
 print("--> Paso 2/5: Cargando modelo de Diarización (esto puede tardar)...")
 try:
+    login(token=HF_TOKEN)
+
     pipeline = Pipeline.from_pretrained(
-        "pyannote/speaker-diarization-3.1",
-        use_auth_token=HF_TOKEN
+        "pyannote/speaker-diarization-3.1"
     )
 except Exception as e:
-    print(f"❌ Error al cargar el modelo. Verifica tu token y permisos en Hugging Face.")
+    print(f"❌ ERROR TÉCNICO AL CARGAR EL MODELO:")
+    print(f"------------------------------------------------")
+    print(f"{e}")  # <--- ESTO ES LO QUE NECESITAMOS VER
+    print(f"------------------------------------------------")
+    print(f"Si el error menciona 'libsndfile' o 'torchaudio', es un problema de instalación, no de token.")
     exit()
 
 # 4. Analizar quién habla
