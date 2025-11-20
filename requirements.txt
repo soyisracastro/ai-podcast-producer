@@ -1,0 +1,12 @@
+# --- Inteligencia Artificial (Audio y Diarización) ---
+pyannote.audio
+torch
+torchaudio
+
+# --- Procesamiento de Audio y Video ---
+pydub
+moviepy
+imageio-ffmpeg
+
+# --- Utilidades y Configuración ---
+python-dotenv
