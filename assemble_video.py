@@ -7,12 +7,12 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 # --- CONFIGURACIÓN ---
 # Archivos de entrada (Debes traerlos de HeyGen)
-FILE_VIDEO_A = "video_host_A.mp4" 
-FILE_VIDEO_B = "video_host_B.mp4"
+FILE_VIDEO_A = "./input/video_host_A.mp4" 
+FILE_VIDEO_B = "./input/video_host_B.mp4"
 # Archivo generado por el script anterior
-JSON_GUIA = "editing_guide.json"
+JSON_GUIA = "./output/editing_guide.json"
 # Salida
-OUTPUT_FILE = "final_episode.mp4"
+OUTPUT_FILE = "./output/final_episode.mp4"
 
 def montar_video():
     print("--> Paso 1/3: Verificando archivos...")

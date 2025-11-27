@@ -12,3 +12,10 @@ __pycache__/
 # Archivos temporales
 editing_guide.json
 temp_audio.wav
+
+# Directorios input y output
+input/
+output/
+
+# Directorio de archives (backups locales)
+archives/

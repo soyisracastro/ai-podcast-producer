@@ -20,8 +20,8 @@ load_dotenv()
 
 # --- CONFIGURACIÓN ---
 HF_TOKEN = os.getenv("HF_TOKEN")
-INPUT_FILE = "podcast_notebooklm.m4a"   # Tu archivo de entrada
-TEMP_WAV = "temp_audio.wav"             # Archivo temporal
+INPUT_FILE = "./input/podcast_notebooklm.m4a"   # Tu archivo de entrada
+TEMP_WAV = "./input/temp_audio.wav"             # Archivo temporal
 
 # Validación de seguridad
 if not HF_TOKEN:
@@ -111,8 +111,8 @@ print(f"   Procesando... {total_segments}/{total_segments} - ¡Listo!")
 print("--> Paso 5/5: Guardando archivos finales...")
 
 # Audios para HeyGen
-track_host_a.export("track_host_A.mp3", format="mp3")
-track_host_b.export("track_host_B.mp3", format="mp3")
+track_host_a.export("./output/track_host_A.mp3", format="mp3")
+track_host_b.export("./output/track_host_B.mp3", format="mp3")
 
 # JSON para el script de video
 with open('editing_guide.json', 'w') as f:
