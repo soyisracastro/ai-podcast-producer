@@ -84,9 +84,22 @@ fi
 
 # Determinar nombre del archivo
 if [ -z "$1" ]; then
-    # Si no se proporciona nombre, usar timestamp
-    TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-    ARCHIVE_NAME="podcast_episode_${TIMESTAMP}.zip"
+    # Si no se proporciona nombre, buscar archivo .m4a en /input
+    M4A_FILE=$(find "$INPUT_DIR" -maxdepth 1 -type f -name "*.m4a" | head -n 1)
+
+    if [ -n "$M4A_FILE" ]; then
+        # Extraer nombre del archivo sin extensión
+        M4A_BASENAME=$(basename "$M4A_FILE" .m4a)
+        # Sanitizar nombre (reemplazar espacios y caracteres especiales)
+        EPISODE_NAME=$(echo "$M4A_BASENAME" | tr ' ' '_' | tr -cd '[:alnum:]_-')
+        ARCHIVE_NAME="${EPISODE_NAME}.zip"
+        print_info "Nombre detectado del archivo .m4a: $M4A_BASENAME"
+    else
+        # Si no hay archivo .m4a, usar timestamp
+        TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+        ARCHIVE_NAME="podcast_episode_${TIMESTAMP}.zip"
+        print_info "No se encontró archivo .m4a, usando timestamp"
+    fi
 else
     # Usar nombre proporcionado (sanitizado)
     EPISODE_NAME=$(echo "$1" | tr ' ' '_' | tr -cd '[:alnum:]_-')

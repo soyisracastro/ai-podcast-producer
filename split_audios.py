@@ -20,7 +20,7 @@ load_dotenv()
 
 # --- CONFIGURACIÓN ---
 HF_TOKEN = os.getenv("HF_TOKEN")
-INPUT_FILE = "./input/podcast_notebooklm.m4a"   # Tu archivo de entrada
+INPUT_DIR = "./input"
 TEMP_WAV = "./input/temp_audio.wav"             # Archivo temporal
 
 # Validación de seguridad
@@ -28,6 +28,24 @@ if not HF_TOKEN:
     print("❌ ERROR: No se encontró la variable HF_TOKEN.")
     print("Asegúrate de tener un archivo '.env' con la línea: HF_TOKEN=hf_tu_token_aqui")
     exit()
+
+# Buscar archivo .m4a en el directorio /input
+print("--> Buscando archivo .m4a en /input...")
+m4a_files = [f for f in os.listdir(INPUT_DIR) if f.endswith('.m4a') and os.path.isfile(os.path.join(INPUT_DIR, f))]
+
+if len(m4a_files) == 0:
+    print("❌ ERROR: No se encontró ningún archivo .m4a en el directorio /input")
+    print("Por favor, coloca tu audio de NotebookLM en la carpeta /input")
+    exit()
+elif len(m4a_files) > 1:
+    print("⚠️  ADVERTENCIA: Se encontraron múltiples archivos .m4a:")
+    for idx, file in enumerate(m4a_files, 1):
+        print(f"   {idx}. {file}")
+    print(f"\nUsando el primer archivo: {m4a_files[0]}")
+    INPUT_FILE = os.path.join(INPUT_DIR, m4a_files[0])
+else:
+    INPUT_FILE = os.path.join(INPUT_DIR, m4a_files[0])
+    print(f"✓ Archivo encontrado: {m4a_files[0]}")
 
 # 2. Preprocesamiento (M4A -> WAV)
 print(f"--> Paso 1/5: Convirtiendo audio a WAV para la IA...")
@@ -73,25 +91,45 @@ guia_video = []
 tracks_list = list(diarization.itertracks(yield_label=True))
 total_segments = len(tracks_list)
 
+# Identificar todos los speakers únicos detectados
+unique_speakers = set()
+for turn, _, speaker in tracks_list:
+    unique_speakers.add(speaker)
+
 print(f"   Se encontraron {total_segments} segmentos de voz.")
+print(f"   Speakers detectados: {sorted(unique_speakers)}")
+
+# Mapeo dinámico de speakers (solo nombres, sin tracks)
+speaker_mapping = {}
+for idx, speaker in enumerate(sorted(unique_speakers)):
+    if idx == 0:
+        speaker_mapping[speaker] = "HOST_A"
+    elif idx == 1:
+        speaker_mapping[speaker] = "HOST_B"
+    else:
+        # Si hay más de 2 speakers, asignar a HOST_B por defecto
+        speaker_mapping[speaker] = "HOST_B"
+        print(f"   ⚠️  ADVERTENCIA: Se detectó un tercer speaker '{speaker}', será asignado a HOST_B")
+
+print(f"   Mapeo de speakers: {speaker_mapping}")
+print()
 
 for i, (turn, _, speaker) in enumerate(tracks_list):
     # Convertir segundos a milisegundos para Pydub
     start_ms = int(turn.start * 1000)
     end_ms = int(turn.end * 1000)
     
-    # A. Lógica de Audio
+    # A. Lógica de Audio usando mapeo dinámico
     voice_segment = original_audio[start_ms:end_ms]
-    
-    host_name = "UNKNOWN"
-    
-    if speaker == "SPEAKER_00":
-        # Pegar voz sobre el silencio
+
+    # Obtener el nombre del host del mapeo
+    host_name = speaker_mapping.get(speaker, "UNKNOWN")
+
+    # Pegar voz sobre el silencio del track correspondiente
+    if host_name == "HOST_A":
         track_host_a = track_host_a.overlay(voice_segment, position=start_ms)
-        host_name = "HOST_A"
-    elif speaker == "SPEAKER_01":
+    elif host_name == "HOST_B":
         track_host_b = track_host_b.overlay(voice_segment, position=start_ms)
-        host_name = "HOST_B"
     
     # B. Lógica de Video (JSON)
     guia_video.append({
@@ -115,7 +153,7 @@ track_host_a.export("./output/track_host_A.mp3", format="mp3")
 track_host_b.export("./output/track_host_B.mp3", format="mp3")
 
 # JSON para el script de video
-with open('editing_guide.json', 'w') as f:
+with open('./output/editing_guide.json', 'w') as f:
     json.dump(guia_video, f, indent=4)
 
 # Limpiar archivo temporal

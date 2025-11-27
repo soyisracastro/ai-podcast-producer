@@ -64,9 +64,10 @@ Running AI models locally on Apple Silicon requires a specific setup (Python 3.1
 ## 🎬 Usage (Step-by-Step)
 
 ### Step 1: Audio Analysis & Splitting
-Place your NotebookLM audio file in the root folder (update `INPUT_FILE` in code if needed).
+Place your NotebookLM audio file (`.m4a` format) in the `/input` folder. The script will automatically detect it.
 
 ```bash
+# The script will automatically find the .m4a file in /input
 python split_audios.py
 ```
 
@@ -96,16 +97,50 @@ python assemble_video.py
 Output:
 - final_episode.mp4
 
+### Step 4: Archive & Clean (Optional)
+
+After completing an episode, archive the work and prepare for the next project:
+
+```bash
+# Archive with custom name
+./archive_and_clean.sh "episodio_01_intro_ia"
+
+# Or let it auto-detect the name from the .m4a file in /input
+./archive_and_clean.sh
+```
+
+This will:
+- Create a `.zip` file in the `/archives` directory
+- Clean `/input` and `/output` directories
+- Prepare the workspace for a new episode
+
+**Optional - Upload to cloud:**
+```bash
+# Upload to AWS S3
+./upload_to_s3.sh episodio_01_intro_ia.zip my-podcast-bucket
+
+# Or manually copy to OneDrive/Google Drive
+cp archives/episodio_01_intro_ia.zip ~/OneDrive/Podcasts/
+```
+
+📖 For detailed archiving instructions, see [ARCHIVE_GUIDE.md](ARCHIVE_GUIDE.md)
+
 ## 📂 Project Structure
 
 ```text
 ai-podcast-producer/
-├── split_audios.py       # Handles diarization and audio splitting
-├── assemble_video.py     # Handles video stitching and editing logic
-├── editing_guide.json    # Generated map of cuts (Do not edit manually)
-├── .env                  # API Keys (Excluded from Git)
-├── .gitignore            # Git configuration
-└── README.md             # Documentation
+├── split_audios.py           # Handles diarization and audio splitting
+├── assemble_video.py         # Handles video stitching and editing logic
+├── archive_and_clean.sh      # Archive & clean input/output directories
+├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
+├── editing_guide.json        # Generated map of cuts (Do not edit manually)
+├── .env                      # API Keys (Excluded from Git)
+├── .gitignore                # Git configuration
+├── README.md                 # Documentation
+├── ARCHIVE_GUIDE.md          # Archive & backup documentation
+├── input/                    # Input files directory
+├── output/                   # Output files directory
+└── archives/                 # Local backup archives (git-ignored)
 ```
 
 ## 🔮 Roadmap
