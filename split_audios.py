@@ -99,19 +99,31 @@ for turn, _, speaker in tracks_list:
 print(f"   Se encontraron {total_segments} segmentos de voz.")
 print(f"   Speakers detectados: {sorted(unique_speakers)}")
 
-# Mapeo dinámico de speakers (solo nombres, sin tracks)
+# Mapeo dinámico de speakers basado en ORDEN DE APARICIÓN (quién habla primero)
 speaker_mapping = {}
-for idx, speaker in enumerate(sorted(unique_speakers)):
+speakers_in_order = []
+
+# Obtener speakers en orden de aparición
+for turn, _, speaker in tracks_list:
+    if speaker not in speakers_in_order:
+        speakers_in_order.append(speaker)
+
+# Asignar HOST_A al que habla primero, HOST_B al segundo
+for idx, speaker in enumerate(speakers_in_order):
     if idx == 0:
         speaker_mapping[speaker] = "HOST_A"
+        print(f"   HOST_A asignado a '{speaker}' (habla primero en {tracks_list[0][0].start:.2f}s)")
     elif idx == 1:
         speaker_mapping[speaker] = "HOST_B"
+        # Encontrar cuándo habla por primera vez HOST_B
+        first_b_time = next((turn.start for turn, _, spk in tracks_list if spk == speaker), 0)
+        print(f"   HOST_B asignado a '{speaker}' (habla primero en {first_b_time:.2f}s)")
     else:
         # Si hay más de 2 speakers, asignar a HOST_B por defecto
         speaker_mapping[speaker] = "HOST_B"
         print(f"   ⚠️  ADVERTENCIA: Se detectó un tercer speaker '{speaker}', será asignado a HOST_B")
 
-print(f"   Mapeo de speakers: {speaker_mapping}")
+print(f"   Mapeo final: {speaker_mapping}")
 print()
 
 for i, (turn, _, speaker) in enumerate(tracks_list):
