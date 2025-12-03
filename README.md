@@ -55,11 +55,23 @@ Running AI models locally on Apple Silicon requires a specific setup (Python 3.1
     *(Note: Create a `requirements.txt` with: `pyannote.audio`, `pydub`, `torch`, `python-dotenv`, `moviepy`)*
 
 4.  **Environment Setup:**
-    Create a `.env` file in the root directory and add your Hugging Face token:
-    ```ini
-    HF_TOKEN=hf_your_token_here
+    Create a `.env` file in the root directory (copy from `.env.example`):
+    ```bash
+    cp .env.example .env
     ```
-    *Important: You must accept the user agreement for `pyannote/speaker-diarization-3.1` ([click here](https://huggingface.co/pyannote/speaker-diarization-3.1)) and ` pyannote/segmentation-3.0` ([click here](https://huggingface.co/pyannote/segmentation-3.0)) on Hugging Face Hub.*
+
+    Edit `.env` and add your API keys:
+    ```ini
+    # Required for speaker diarization (split_audios.py)
+    HF_TOKEN=hf_your_token_here
+
+    # Optional - for chapter analysis (analyze_chapters.py)
+    OPENAI_API_KEY=sk-your_openai_key_here
+    ```
+
+    **Important:**
+    - You must accept the user agreement for `pyannote/speaker-diarization-3.1` ([click here](https://huggingface.co/pyannote/speaker-diarization-3.1)) and `pyannote/segmentation-3.0` ([click here](https://huggingface.co/pyannote/segmentation-3.0)) on Hugging Face Hub.
+    - OpenAI API key is only needed if you want to use the chapter analysis feature.
 
 ## 🎬 Usage (Step-by-Step)
 
@@ -87,7 +99,36 @@ Output:
   - host_a_video.mp4
   - host_b_video.mp4
 
-### Step 3: Automated Assembly
+### Step 3: Generate Subtitles (Optional)
+Generate subtitles automatically from the original audio using AI transcription.
+
+```bash
+python generate_subtitles.py
+```
+
+Output:
+- `{filename}.srt` (Subtitle file compatible with video editors and YouTube)
+
+**Note:** This uses OpenAI Whisper locally (no API cost). The first run will download the AI model (~100MB for 'base' model).
+
+### Step 3b: Analyze Chapters & Generate Metadata (Optional but Recommended)
+Use AI to analyze the transcript and generate YouTube chapters, title, description, and thumbnail prompt.
+
+```bash
+python analyze_chapters.py
+```
+
+**Prerequisites:** Add `OPENAI_API_KEY` to your `.env` file (see [.env.example](.env.example))
+
+Output:
+- `{filename}_youtube.txt` - Complete YouTube metadata (title, description, chapters, thumbnail prompt)
+- `{filename}_chapters.json` - Structured chapter data with timestamps
+- `{filename}_clips.json` - Suggested clips for social media
+- `{filename}_metadata.json` - Complete analysis data
+
+**Cost:** ~$0.01-0.03 USD per episode (using GPT-4o-mini)
+
+### Step 4: Automated Assembly
 Run the assembler to stitch the final episode.
 
 ```bash
@@ -97,7 +138,7 @@ python assemble_video.py
 Output:
 - final_episode.mp4
 
-### Step 4: Archive & Clean (Optional)
+### Step 5: Archive & Clean (Optional)
 
 After completing an episode, archive the work and prepare for the next project:
 
@@ -130,11 +171,14 @@ cp archives/episodio_01_intro_ia.zip ~/OneDrive/Podcasts/
 ```text
 ai-podcast-producer/
 ├── split_audios.py           # Handles diarization and audio splitting
+├── generate_subtitles.py     # Generates .srt subtitles from audio
+├── analyze_chapters.py       # Analyzes transcript and generates YouTube metadata
 ├── assemble_video.py         # Handles video stitching and editing logic
 ├── archive_and_clean.sh      # Archive & clean input/output directories
 ├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
 ├── editing_guide.json        # Generated map of cuts (Do not edit manually)
 ├── .env                      # API Keys (Excluded from Git)
+├── .env.example              # Template for environment variables
 ├── .gitignore                # Git configuration
 ├── README.md                 # Documentation
 ├── ARCHIVE_GUIDE.md          # Archive & backup documentation
@@ -147,7 +191,8 @@ ai-podcast-producer/
 
 - [x] Speaker Diarization & Audio Splitting
 - [x] Automated Multi-Cam Video Assembly
-- [ ] Metadata Generation: Use OpenAI/Claude API to generate Title, Description, and SEO Tags from audio transcript.
+- [x] Automatic Subtitle Generation (.srt)
+- [x] AI Chapter Analysis & YouTube Metadata Generation (title, description, chapters, thumbnail prompt)
 - [ ] HeyGen API Integration: Automate the video generation and download process.
-- [ ] Thumbnail Automation: Generate image prompts for DALL-E 3 based on episode topics.
+- [ ] Clip Extraction: Automatically extract suggested clips for social media.
 - [ ] YouTube Publishing: Upload final video via YouTube Data API.

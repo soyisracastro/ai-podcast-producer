@@ -3,6 +3,12 @@ pyannote.audio
 torch
 torchaudio
 
+# --- Transcripción y Subtítulos ---
+openai-whisper
+
+# --- Análisis de Contenido con IA ---
+openai
+
 # --- Procesamiento de Audio y Video ---
 pydub
 moviepy
