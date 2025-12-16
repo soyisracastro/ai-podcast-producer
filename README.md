@@ -199,34 +199,46 @@ Output:
 4. Saves them with descriptive, SEO-friendly names
 
 ### Step 4c: Sync Publication Calendar to Notion (Optional - NEW!)
-Automatically sync your publication calendar to a Notion database for easy content management.
+Automatically sync your publication calendar to a Notion database with specific publication dates.
 
 ```bash
-python sync_to_notion.py
+# Specify the Monday of the week you want to publish
+python sync_to_notion.py 16-12-2024
 ```
 
 **Prerequisites:**
 - Must have run `analyze_chapters.py` (Step 3b) to generate the calendar CSV
 - Notion integration token and database ID configured (see [NOTION_SETUP.md](NOTION_SETUP.md))
+- Add "Fecha" (Date) property to your Notion database
 
 Output:
-- All calendar entries synced to your Notion database
-- Each entry includes: Day, Time, Content Type, Title, Platform, Notes, and a "Published" checkbox
+- All calendar entries synced to your Notion database with calculated dates
+- Each entry includes: Day, Date, Time, Content Type, Title, Platform, Notes, and a "Published" checkbox
 
 **Features:**
-- 📅 **Automated Sync**: Imports publication calendar directly from CSV to Notion
+- 📅 **Date Calculation**: Automatically calculates dates based on the Monday you specify
 - ✅ **Publication Tracking**: Checkbox field to mark content as published
-- 🔄 **Smart Updates**: Archives old entries and syncs fresh data
-- 📊 **Content Management**: Filter and organize your publication schedule in Notion
+- 🔄 **Non-Destructive**: Never deletes or modifies existing entries (only adds new ones)
+- 📊 **Calendar View**: Use Notion's calendar view to see publications visually
+- 🎯 **Flexible Scheduling**: Can schedule content for past, present, or future weeks
 
 **Setup:** See [NOTION_SETUP.md](NOTION_SETUP.md) for step-by-step configuration instructions (5 minutes)
 
 **Workflow:**
 1. Run `analyze_chapters.py` to generate calendar
-2. Run `sync_to_notion.py` to sync to Notion
-3. Open your Notion database to view the publication schedule
+2. Run `sync_to_notion.py DD-MM-AAAA` (Monday of target week)
+3. Open your Notion database in calendar view
 4. Mark clips as "Published" after posting to social media
 5. Use Notion views to filter by platform, day, or publication status
+
+**Examples:**
+```bash
+# For the week of December 16, 2024
+python sync_to_notion.py 16-12-2024
+
+# For the week of January 6, 2025
+python sync_to_notion.py 06-01-2025
+```
 
 ### Step 5: Archive & Clean (Optional)
 
