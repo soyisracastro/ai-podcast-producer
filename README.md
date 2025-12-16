@@ -89,6 +89,8 @@ Output:
 - track_host_B.mp3
 - editing_guide.json
 
+**⚠️ Troubleshooting:** If you notice incorrect speaker assignments (same avatar with different voices), see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for debugging and fixing tools.
+
 ### Step 2: Video Generation (HeyGen)
 
 - Log in to HeyGen.
@@ -187,7 +189,22 @@ This will:
 cp archives/episodio_01_intro_ia.zip ~/OneDrive/Podcasts/
 ```
 
-📖 For detailed archiving instructions, see [ARCHIVE_GUIDE.md](ARCHIVE_GUIDE.md)
+📖 For detailed archiving instructions, see [ARCHIVE_GUIDE.md](docs/ARCHIVE_GUIDE.md)
+
+## 📚 Documentation
+
+Complete documentation is available in the `/docs` folder:
+
+| Document | Description | When to Use |
+|----------|-------------|-------------|
+| [Quick Start Debug](docs/QUICK_START_DEBUG.md) | 3-step debugging guide | Speaker assignment issues |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Complete problem-solving guide | Detailed solutions |
+| [Speaker Detection Improvements](docs/SPEAKER_DETECTION_IMPROVEMENTS.md) | Technical details | Advanced users |
+| [Archive Guide](docs/ARCHIVE_GUIDE.md) | Archiving workflow | After completing episodes |
+
+**→ See [docs/README.md](docs/README.md) for complete documentation index**
+
+---
 
 ## 📂 Project Structure
 
@@ -200,12 +217,18 @@ ai-podcast-producer/
 ├── assemble_video.py         # Handles video stitching and editing logic
 ├── archive_and_clean.sh      # Archive & clean input/output directories
 ├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
+├── debug_diarization.py      # 🔍 Analyze speaker assignment quality
+├── fix_speaker_assignment.py # 🔧 Fix incorrect speaker assignments
 ├── editing_guide.json        # Generated map of cuts (Do not edit manually)
 ├── .env                      # API Keys (Excluded from Git)
 ├── .env.example              # Template for environment variables
 ├── .gitignore                # Git configuration
-├── README.md                 # Documentation
-├── ARCHIVE_GUIDE.md          # Archive & backup documentation
+├── README.md                 # Main documentation
+├── docs/                     # 📚 Complete documentation
+│   ├── TROUBLESHOOTING.md    # Debugging & fixing speaker issues
+│   ├── QUICK_START_DEBUG.md  # Quick debugging guide (3 steps)
+│   ├── SPEAKER_DETECTION_IMPROVEMENTS.md  # Technical details
+│   └── ARCHIVE_GUIDE.md      # Archive & backup workflow
 ├── input/                    # Input files directory
 ├── output/                   # Output files directory
 └── archives/                 # Local backup archives (git-ignored)

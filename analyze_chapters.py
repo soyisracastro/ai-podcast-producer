@@ -17,6 +17,8 @@ load_dotenv()
 
 # --- CONFIGURACIÓN ---
 OUTPUT_DIR = "./output"
+TRANSCRIPTIONS_DIR = "./output/transcriptions"
+METADATA_DIR = "./output/metadata"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def parse_srt(srt_path):
@@ -200,12 +202,12 @@ def main():
         print("\nPuedes obtener tu API key en: https://platform.openai.com/api-keys")
         return
 
-    # 2. Buscar archivo .srt en /output
+    # 2. Buscar archivo .srt en /output/transcriptions
     print("\n--> Paso 1/5: Buscando archivo de subtítulos...")
-    srt_files = [f for f in os.listdir(OUTPUT_DIR) if f.endswith('.srt') and os.path.isfile(os.path.join(OUTPUT_DIR, f))]
+    srt_files = [f for f in os.listdir(TRANSCRIPTIONS_DIR) if f.endswith('.srt') and os.path.isfile(os.path.join(TRANSCRIPTIONS_DIR, f))]
 
     if len(srt_files) == 0:
-        print("❌ ERROR: No se encontró ningún archivo .srt en /output")
+        print("❌ ERROR: No se encontró ningún archivo .srt en /output/transcriptions")
         print("Por favor, ejecuta primero: python generate_subtitles.py")
         return
     elif len(srt_files) > 1:
@@ -214,7 +216,7 @@ def main():
             print(f"   {idx}. {file}")
         print(f"\nUsando el más reciente: {srt_files[0]}")
 
-    srt_path = os.path.join(OUTPUT_DIR, srt_files[0])
+    srt_path = os.path.join(TRANSCRIPTIONS_DIR, srt_files[0])
     filename_base = os.path.splitext(srt_files[0])[0]
 
     print(f"✓ Archivo encontrado: {srt_files[0]}")
@@ -264,29 +266,32 @@ def main():
     # 6. Generar archivos de salida
     print("\n--> Paso 5/5: Generando archivos de salida...")
 
+    # Crear directorio metadata si no existe
+    os.makedirs(METADATA_DIR, exist_ok=True)
+
     try:
         # A. chapters.json (Capítulos estructurados)
-        chapters_path = os.path.join(OUTPUT_DIR, f"{filename_base}_chapters.json")
+        chapters_path = os.path.join(METADATA_DIR, f"{filename_base}_chapters.json")
         with open(chapters_path, 'w', encoding='utf-8') as f:
             json.dump(analysis['chapters'], f, indent=2, ensure_ascii=False)
         print(f"✓ {chapters_path}")
 
         # B. clips_guide.json (Guía de clips para redes sociales)
         if 'clips' in analysis and analysis['clips']:
-            clips_path = os.path.join(OUTPUT_DIR, f"{filename_base}_clips.json")
+            clips_path = os.path.join(METADATA_DIR, f"{filename_base}_clips.json")
             with open(clips_path, 'w', encoding='utf-8') as f:
                 json.dump(analysis['clips'], f, indent=2, ensure_ascii=False)
             print(f"✓ {clips_path}")
 
         # C. youtube_description.txt (Descripción completa lista para copiar)
-        description_path = os.path.join(OUTPUT_DIR, f"{filename_base}_youtube.txt")
+        description_path = os.path.join(METADATA_DIR, f"{filename_base}_youtube.txt")
         description_text = generate_youtube_description(analysis)
         with open(description_path, 'w', encoding='utf-8') as f:
             f.write(description_text)
         print(f"✓ {description_path}")
 
         # D. metadata.json (Todo junto para referencia)
-        metadata_path = os.path.join(OUTPUT_DIR, f"{filename_base}_metadata.json")
+        metadata_path = os.path.join(METADATA_DIR, f"{filename_base}_metadata.json")
         with open(metadata_path, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2, ensure_ascii=False)
         print(f"✓ {metadata_path}")

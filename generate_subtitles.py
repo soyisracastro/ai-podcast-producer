@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 # --- CONFIGURACIÓN ---
 INPUT_DIR = "./input"
 OUTPUT_DIR = "./output"
+TRANSCRIPTIONS_DIR = "./output/transcriptions"
 
 def format_timestamp(seconds):
     """
@@ -74,8 +75,8 @@ def main():
 
     input_file = os.path.join(INPUT_DIR, m4a_files[0])
     filename = os.path.splitext(m4a_files[0])[0]
-    output_srt = os.path.join(OUTPUT_DIR, f"{filename}.srt")
-    output_txt = os.path.join(OUTPUT_DIR, f"{filename}.txt")
+    output_srt = os.path.join(TRANSCRIPTIONS_DIR, f"{filename}.srt")
+    output_txt = os.path.join(TRANSCRIPTIONS_DIR, f"{filename}.txt")
 
     print(f"✓ Archivo encontrado: {m4a_files[0]}")
 
@@ -134,8 +135,8 @@ def main():
     print(f"\n--> Paso 4/4: Generando archivos de salida...")
 
     try:
-        # Crear directorio /output si no existe
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        # Crear directorio /output/transcriptions si no existe
+        os.makedirs(TRANSCRIPTIONS_DIR, exist_ok=True)
 
         # Generar archivo .srt (con timestamps)
         generate_srt(segments, output_srt)
