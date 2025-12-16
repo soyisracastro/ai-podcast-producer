@@ -126,10 +126,18 @@ python analyze_chapters.py
 Output:
 - `{filename}_youtube.txt` - Complete YouTube metadata (title, description, chapters, thumbnail prompt)
 - `{filename}_chapters.json` - Structured chapter data with timestamps
-- `{filename}_clips.json` - Suggested clips for social media
-- `{filename}_metadata.json` - Complete analysis data
+- `{filename}_clips.json` - Suggested clips for social media (legacy)
+- `{filename}_metadata.json` - Complete analysis data with viral_clips and chapter_clips
+- `{filename}_content_table.csv` - **NEW:** Content table with SEO metadata for all clips
+- `{filename}_calendar.csv` - **NEW:** Auto-generated weekly publication calendar
 
 **Cost:** ~$0.01-0.03 USD per episode (using GPT-4o-mini)
+
+**New Features (2025 Update):**
+- 🎯 **Two Clip Types**: Viral clips (15-60s) for social media + Chapter clips (full chapters) for YouTube
+- 📊 **SEO Optimization**: Each clip gets unique SEO title, description, and thumbnail prompt
+- 📅 **Smart Calendar**: Auto-assigns clips to optimal weekly time slots
+- 🔢 **Dynamic Clip Count**: AI decides number of viral clips based on episode length (4-15 clips)
 
 ### Step 3c: Generate Visual Markers (Optional - For Dynamic Editing)
 Automatically identify key moments for visual elements (images, infographics, text overlays) to keep audience engaged.
@@ -162,6 +170,63 @@ python assemble_video.py
 
 Output:
 - final_episode.mp4
+
+### Step 4b: Generate Clips Automatically (Optional - NEW!)
+Extract viral clips and chapter clips automatically from the final video based on AI analysis.
+
+```bash
+python generate_clips.py
+```
+
+**Prerequisites:**
+- Must have run `analyze_chapters.py` (Step 3b) to generate metadata
+- Must have the final video in `/input` folder (from Step 4)
+
+Output:
+- `/output/viral_clips/viral_clip_{title}.mp4` - Short viral clips (15-60s) for TikTok/Instagram/Facebook
+- `/output/clips/clip_{title}.mp4` - Full chapter clips for YouTube
+
+**Features:**
+- 🎬 **Automated Extraction**: Uses MoviePy to cut clips based on timestamps from metadata.json
+- 📱 **Ready for Social Media**: Viral clips are optimized for short-form platforms
+- 📺 **YouTube Chapters**: Full chapter clips for viewers who want specific topics
+- 📝 **SEO-Optimized Names**: File names use SEO titles from the analysis
+
+**Note:** This saves hours of manual clip editing! The script automatically:
+1. Finds the metadata.json with clip timestamps
+2. Locates the final video file
+3. Extracts all viral and chapter clips
+4. Saves them with descriptive, SEO-friendly names
+
+### Step 4c: Sync Publication Calendar to Notion (Optional - NEW!)
+Automatically sync your publication calendar to a Notion database for easy content management.
+
+```bash
+python sync_to_notion.py
+```
+
+**Prerequisites:**
+- Must have run `analyze_chapters.py` (Step 3b) to generate the calendar CSV
+- Notion integration token and database ID configured (see [NOTION_SETUP.md](NOTION_SETUP.md))
+
+Output:
+- All calendar entries synced to your Notion database
+- Each entry includes: Day, Time, Content Type, Title, Platform, Notes, and a "Published" checkbox
+
+**Features:**
+- 📅 **Automated Sync**: Imports publication calendar directly from CSV to Notion
+- ✅ **Publication Tracking**: Checkbox field to mark content as published
+- 🔄 **Smart Updates**: Archives old entries and syncs fresh data
+- 📊 **Content Management**: Filter and organize your publication schedule in Notion
+
+**Setup:** See [NOTION_SETUP.md](NOTION_SETUP.md) for step-by-step configuration instructions (5 minutes)
+
+**Workflow:**
+1. Run `analyze_chapters.py` to generate calendar
+2. Run `sync_to_notion.py` to sync to Notion
+3. Open your Notion database to view the publication schedule
+4. Mark clips as "Published" after posting to social media
+5. Use Notion views to filter by platform, day, or publication status
 
 ### Step 5: Archive & Clean (Optional)
 
@@ -214,6 +279,8 @@ ai-podcast-producer/
 ├── generate_subtitles.py     # Generates .srt subtitles and .txt transcription
 ├── analyze_chapters.py       # Analyzes transcript and generates YouTube metadata
 ├── generate_visual_markers.py # Generates visual prompts (images, infographics)
+├── generate_clips.py         # 🎬 Extracts viral and chapter clips from video
+├── sync_to_notion.py         # 📅 Syncs publication calendar to Notion
 ├── assemble_video.py         # Handles video stitching and editing logic
 ├── archive_and_clean.sh      # Archive & clean input/output directories
 ├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
@@ -224,6 +291,7 @@ ai-podcast-producer/
 ├── .env.example              # Template for environment variables
 ├── .gitignore                # Git configuration
 ├── README.md                 # Main documentation
+├── NOTION_SETUP.md           # 📋 Notion integration setup guide
 ├── docs/                     # 📚 Complete documentation
 │   ├── TROUBLESHOOTING.md    # Debugging & fixing speaker issues
 │   ├── QUICK_START_DEBUG.md  # Quick debugging guide (3 steps)
@@ -231,6 +299,9 @@ ai-podcast-producer/
 │   └── ARCHIVE_GUIDE.md      # Archive & backup workflow
 ├── input/                    # Input files directory
 ├── output/                   # Output files directory
+│   ├── clips/                # Generated chapter clips
+│   ├── viral_clips/          # Generated viral clips (15-60s)
+│   └── metadata/             # Generated metadata and calendars
 └── archives/                 # Local backup archives (git-ignored)
 ```
 
@@ -240,6 +311,10 @@ ai-podcast-producer/
 - [x] Automated Multi-Cam Video Assembly
 - [x] Automatic Subtitle Generation (.srt)
 - [x] AI Chapter Analysis & YouTube Metadata Generation (title, description, chapters, thumbnail prompt)
-- [ ] HeyGen API Integration: Automate the video generation and download process.
-- [ ] Clip Extraction: Automatically extract suggested clips for social media.
-- [ ] YouTube Publishing: Upload final video via YouTube Data API.
+- [x] Clip Extraction: Automatically extract viral and chapter clips for social media
+- [x] SEO Optimization: Auto-generated SEO titles, descriptions, and thumbnail prompts
+- [x] Publication Calendar: Weekly content schedule with optimal posting times
+- [x] Notion Integration: Sync publication calendar to Notion for content management
+- [ ] HeyGen API Integration: Automate the video generation and download process
+- [ ] YouTube Publishing: Upload final video via YouTube Data API
+- [ ] Social Media API Integration: Auto-publish clips to TikTok, Instagram, Facebook

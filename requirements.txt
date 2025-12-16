@@ -16,3 +16,6 @@ imageio-ffmpeg
 
 # --- Utilidades y Configuración ---
 python-dotenv
+
+# --- Integración con Notion ---
+notion-client
