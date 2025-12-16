@@ -43,6 +43,16 @@ def generate_srt(segments, output_path):
             # Línea vacía separadora
             f.write("\n")
 
+def generate_plain_text(segments, output_path):
+    """
+    Genera archivo .txt con transcripción completa sin timestamps
+    Todo el contenido en una sola línea continua
+    """
+    with open(output_path, 'w', encoding='utf-8') as f:
+        # Unir todos los textos con un espacio, formando una línea continua
+        full_text = ' '.join(segment['text'].strip() for segment in segments)
+        f.write(full_text)
+
 def main():
     print("=" * 60)
     print("  GENERADOR DE SUBTÍTULOS - AI PODCAST PRODUCER")
@@ -65,6 +75,7 @@ def main():
     input_file = os.path.join(INPUT_DIR, m4a_files[0])
     filename = os.path.splitext(m4a_files[0])[0]
     output_srt = os.path.join(OUTPUT_DIR, f"{filename}.srt")
+    output_txt = os.path.join(OUTPUT_DIR, f"{filename}.txt")
 
     print(f"✓ Archivo encontrado: {m4a_files[0]}")
 
@@ -119,33 +130,41 @@ def main():
         print(f"❌ ERROR durante la transcripción: {e}")
         return
 
-    # 4. Generar archivo .srt
-    print(f"\n--> Paso 4/4: Generando archivo de subtítulos...")
+    # 4. Generar archivos de salida
+    print(f"\n--> Paso 4/4: Generando archivos de salida...")
 
     try:
         # Crear directorio /output si no existe
         os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+        # Generar archivo .srt (con timestamps)
         generate_srt(segments, output_srt)
+        print(f"✓ Archivo .srt generado")
 
-        print(f"✓ Archivo generado exitosamente")
+        # Generar archivo .txt (transcripción completa sin timestamps)
+        generate_plain_text(segments, output_txt)
+        print(f"✓ Archivo .txt generado")
 
     except Exception as e:
-        print(f"❌ ERROR al guardar el archivo: {e}")
+        print(f"❌ ERROR al guardar los archivos: {e}")
         return
 
     # 5. Resumen final
     print("\n" + "=" * 60)
     print("✅ ¡PROCESO COMPLETADO!")
     print("=" * 60)
-    print(f"📂 Archivo generado:")
-    print(f"   {output_srt}")
+    print(f"📂 Archivos generados:")
+    print(f"   1. {output_srt}")
+    print(f"      → Subtítulos con timestamps para video/YouTube")
+    print(f"   2. {output_txt}")
+    print(f"      → Transcripción completa sin timestamps (texto continuo)")
     print(f"\n📊 Estadísticas:")
-    print(f"   • Total de subtítulos: {total_segments}")
+    print(f"   • Total de segmentos: {total_segments}")
     print(f"   • Duración total: {format_timestamp(segments[-1]['end'])}")
     print(f"   • Idioma detectado: {result.get('language', 'N/A')}")
     print("\n💡 Siguiente paso:")
-    print("   Importa el archivo .srt en tu editor de video o YouTube")
+    print("   - Importa el .srt en tu editor de video o YouTube")
+    print("   - Usa el .txt para análisis de capítulos (analyze_chapters.py)")
     print("=" * 60)
 
 if __name__ == "__main__":

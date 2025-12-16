@@ -107,7 +107,8 @@ python generate_subtitles.py
 ```
 
 Output:
-- `{filename}.srt` (Subtitle file compatible with video editors and YouTube)
+- `{filename}.srt` (Subtitle file with timestamps for video editors and YouTube)
+- `{filename}.txt` (Plain text transcription in one continuous line)
 
 **Note:** This uses OpenAI Whisper locally (no API cost). The first run will download the AI model (~100MB for 'base' model).
 
@@ -125,6 +126,28 @@ Output:
 - `{filename}_chapters.json` - Structured chapter data with timestamps
 - `{filename}_clips.json` - Suggested clips for social media
 - `{filename}_metadata.json` - Complete analysis data
+
+**Cost:** ~$0.01-0.03 USD per episode (using GPT-4o-mini)
+
+### Step 3c: Generate Visual Markers (Optional - For Dynamic Editing)
+Automatically identify key moments for visual elements (images, infographics, text overlays) to keep audience engaged.
+
+```bash
+python generate_visual_markers.py
+```
+
+**Prerequisites:** Add `OPENAI_API_KEY` to your `.env` file
+
+Output:
+- `{filename}_visual_guide.txt` - Complete guide with image prompts and infographic specs
+- `{filename}_visual_timeline.csv` - Timeline for importing into video editors
+- `{filename}_visual_markers.json` - Structured visual data
+
+**Features:**
+- 🖼️ Photo-realistic image prompts (DALL-E/Midjourney ready)
+- 📊 Infographic specifications for complex data (calculations, comparisons)
+- 💬 Text overlay suggestions for key phrases
+- ⏱️ Strategic timestamps to maintain audience attention
 
 **Cost:** ~$0.01-0.03 USD per episode (using GPT-4o-mini)
 
@@ -171,8 +194,9 @@ cp archives/episodio_01_intro_ia.zip ~/OneDrive/Podcasts/
 ```text
 ai-podcast-producer/
 ├── split_audios.py           # Handles diarization and audio splitting
-├── generate_subtitles.py     # Generates .srt subtitles from audio
+├── generate_subtitles.py     # Generates .srt subtitles and .txt transcription
 ├── analyze_chapters.py       # Analyzes transcript and generates YouTube metadata
+├── generate_visual_markers.py # Generates visual prompts (images, infographics)
 ├── assemble_video.py         # Handles video stitching and editing logic
 ├── archive_and_clean.sh      # Archive & clean input/output directories
 ├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
