@@ -66,6 +66,14 @@ try:
     pipeline = Pipeline.from_pretrained(
         "pyannote/speaker-diarization-3.1"
     )
+
+    # Configuración optimizada para mejorar la precisión
+    # num_speakers=2 fuerza al modelo a buscar exactamente 2 speakers
+    # min_speakers=2 y max_speakers=2 evitan detección de speakers extras
+    pipeline_params = {
+        "min_speakers": 2,
+        "max_speakers": 2
+    }
 except Exception as e:
     print(f"❌ ERROR TÉCNICO AL CARGAR EL MODELO:")
     print(f"------------------------------------------------")
@@ -76,7 +84,8 @@ except Exception as e:
 
 # 4. Analizar quién habla
 print(f"--> Paso 3/5: Analizando conversación e identificando voces...")
-diarization = pipeline(TEMP_WAV)
+print(f"   Configuración: Forzando detección de exactamente 2 speakers")
+diarization = pipeline(TEMP_WAV, **pipeline_params)
 
 # 5. Procesamiento de Pistas y JSON
 print("--> Paso 4/5: Generando pistas sincronizadas y guía de video...")
@@ -156,6 +165,63 @@ for i, (turn, _, speaker) in enumerate(tracks_list):
         print(f"   Procesando... {i}/{total_segments}", end="\r")
 
 print(f"   Procesando... {total_segments}/{total_segments} - ¡Listo!")
+
+# 5.5. Validación y corrección de asignaciones
+print("--> Validando asignaciones de speakers...")
+
+def detect_suspicious_sequences(segments, threshold=15):
+    """Detecta secuencias largas del mismo speaker (probables errores)"""
+    suspicious = []
+    current_host = None
+    consecutive_count = 0
+    sequence_start = 0
+
+    for i, seg in enumerate(segments):
+        if seg['host'] == current_host:
+            consecutive_count += 1
+        else:
+            if consecutive_count >= threshold:
+                suspicious.append({
+                    'start_idx': sequence_start,
+                    'end_idx': i - 1,
+                    'host': current_host,
+                    'count': consecutive_count,
+                    'start_time': segments[sequence_start]['start'],
+                    'end_time': segments[i-1]['end']
+                })
+            current_host = seg['host']
+            consecutive_count = 1
+            sequence_start = i
+
+    # Verificar última secuencia
+    if consecutive_count >= threshold:
+        suspicious.append({
+            'start_idx': sequence_start,
+            'end_idx': len(segments) - 1,
+            'host': current_host,
+            'count': consecutive_count,
+            'start_time': segments[sequence_start]['start'],
+            'end_time': segments[-1]['end']
+        })
+
+    return suspicious
+
+suspicious_sequences = detect_suspicious_sequences(guia_video, threshold=15)
+
+if suspicious_sequences:
+    print(f"   ⚠️  ADVERTENCIA: Se detectaron {len(suspicious_sequences)} secuencias sospechosas:")
+    for seq in suspicious_sequences:
+        duration = seq['end_time'] - seq['start_time']
+        print(f"      {seq['host']}: {seq['count']} segmentos consecutivos ({seq['start_time']:.1f}s - {seq['end_time']:.1f}s, duración: {duration:.1f}s)")
+
+    print(f"\n   💡 SUGERENCIA: Esto puede indicar que el modelo confundió a los speakers.")
+    print(f"      Considera revisar el audio original en esos rangos de tiempo.")
+    print(f"      Si el problema persiste, puedes:")
+    print(f"      1. Ejecutar de nuevo el script (a veces da mejores resultados)")
+    print(f"      2. Usar un audio de mejor calidad")
+    print(f"      3. Editar manualmente el archivo editing_guide.json\n")
+else:
+    print(f"   ✓ No se detectaron secuencias sospechosas")
 
 # 6. Guardar Archivos
 print("--> Paso 5/5: Guardando archivos finales...")

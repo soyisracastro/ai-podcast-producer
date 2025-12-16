@@ -16,6 +16,8 @@ load_dotenv()
 
 # --- CONFIGURACIÓN ---
 OUTPUT_DIR = "./output"
+TRANSCRIPTIONS_DIR = "./output/transcriptions"
+METADATA_DIR = "./output/metadata"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def parse_srt(srt_path):
@@ -279,14 +281,14 @@ def main():
 
     # 2. Buscar archivo .srt
     print("\n--> Paso 1/4: Buscando archivo de subtítulos...")
-    srt_files = [f for f in os.listdir(OUTPUT_DIR) if f.endswith('.srt') and os.path.isfile(os.path.join(OUTPUT_DIR, f))]
+    srt_files = [f for f in os.listdir(TRANSCRIPTIONS_DIR) if f.endswith('.srt') and os.path.isfile(os.path.join(TRANSCRIPTIONS_DIR, f))]
 
     if len(srt_files) == 0:
-        print("❌ ERROR: No se encontró ningún archivo .srt en /output")
+        print("❌ ERROR: No se encontró ningún archivo .srt en /output/transcriptions")
         print("Por favor, ejecuta primero: python generate_subtitles.py")
         return
 
-    srt_path = os.path.join(OUTPUT_DIR, srt_files[0])
+    srt_path = os.path.join(TRANSCRIPTIONS_DIR, srt_files[0])
     filename_base = os.path.splitext(srt_files[0])[0]
 
     print(f"✓ Archivo encontrado: {srt_files[0]}")
@@ -336,22 +338,22 @@ def main():
     print("\n--> Paso 4/4: Generando archivos de salida...")
 
     try:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        os.makedirs(METADATA_DIR, exist_ok=True)
 
         # A. Guía visual completa (TXT)
-        guide_path = os.path.join(OUTPUT_DIR, f"{filename_base}_visual_guide.txt")
+        guide_path = os.path.join(METADATA_DIR, f"{filename_base}_visual_guide.txt")
         guide_text = generate_visual_guide(analysis, guide_path)
         with open(guide_path, 'w', encoding='utf-8') as f:
             f.write(guide_text)
         print(f"✓ {guide_path}")
 
         # B. Timeline CSV (para importar en editores)
-        csv_path = os.path.join(OUTPUT_DIR, f"{filename_base}_visual_timeline.csv")
+        csv_path = os.path.join(METADATA_DIR, f"{filename_base}_visual_timeline.csv")
         generate_timeline_csv(markers, csv_path)
         print(f"✓ {csv_path}")
 
         # C. JSON completo
-        json_path = os.path.join(OUTPUT_DIR, f"{filename_base}_visual_markers.json")
+        json_path = os.path.join(METADATA_DIR, f"{filename_base}_visual_markers.json")
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2, ensure_ascii=False)
         print(f"✓ {json_path}")

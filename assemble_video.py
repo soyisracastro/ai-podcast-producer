@@ -6,27 +6,43 @@ import os
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 # --- CONFIGURACIÓN ---
+INPUT_DIR = "./input"
+OUTPUT_DIR = "./output"
 # Archivos de entrada (Debes traerlos de HeyGen)
-FILE_VIDEO_A = "./input/video_host_A.mp4" 
+FILE_VIDEO_A = "./input/video_host_A.mp4"
 FILE_VIDEO_B = "./input/video_host_B.mp4"
 # Archivo generado por el script anterior
 JSON_GUIA = "./output/editing_guide.json"
-# Salida
-OUTPUT_FILE = "./output/final_episode.mp4"
 
 def montar_video():
-    print("--> Paso 1/3: Verificando archivos...")
-    
+    print("--> Paso 1/4: Buscando archivo de audio original...")
+
+    # Buscar archivo .m4a en /input para determinar el nombre de salida
+    m4a_files = [f for f in os.listdir(INPUT_DIR) if f.endswith('.m4a') and os.path.isfile(os.path.join(INPUT_DIR, f))]
+
+    if len(m4a_files) == 0:
+        print("❌ ERROR: No se encontró ningún archivo .m4a en /input")
+        return
+
+    # Usar el nombre del archivo original para el output
+    filename_base = os.path.splitext(m4a_files[0])[0]
+    OUTPUT_FILE = os.path.join(OUTPUT_DIR, f"{filename_base}.mp4")
+
+    print(f"✓ Archivo original encontrado: {m4a_files[0]}")
+    print(f"✓ El video final se guardará como: {filename_base}.mp4")
+
+    print("\n--> Paso 2/4: Verificando archivos...")
+
     # Validaciones
     files_needed = [FILE_VIDEO_A, FILE_VIDEO_B, JSON_GUIA]
     missing = [f for f in files_needed if not os.path.exists(f)]
-    
+
     if missing:
         print(f"❌ ERROR: Faltan archivos necesarios: {missing}")
         print("   Asegúrate de haber corrido 'split_audios.py' y de haber descargado los videos de HeyGen.")
         return
 
-    print("--> Paso 2/3: Cargando videos y procesando cortes de cámara...")
+    print("\n--> Paso 3/4: Cargando videos y procesando cortes de cámara...")
     
     # Cargar videos en memoria
     # Nota: audio=True es importante para mantener el audio que generó HeyGen
@@ -80,7 +96,7 @@ def montar_video():
 
     print(f"   Montando corte {total_cortes}/{total_cortes} - Listo.")
 
-    print("--> Paso 3/3: Renderizando video final (Ve por un café ☕)...")
+    print("\n--> Paso 4/4: Renderizando video final (Ve por un café ☕)...")
     
     # Unir todo
     video_final = concatenate_videoclips(clips_finales, method="compose")
