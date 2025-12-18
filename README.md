@@ -1,6 +1,13 @@
 # AI Podcast Producer
 
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/soyisracastro/ai-podcast-producer?style=social)](https://github.com/soyisracastro/ai-podcast-producer)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/soyisracastro/ai-podcast-producer/pulls)
+
 An automated workflow to convert **NotebookLM** audio research into a fully produced video podcast with synchronized avatars (HeyGen) and multi-camera editing.
+
+> **Cost per episode:** ~$0.06-0.15 USD | **Processing time:** ~30-45 min
 
 ## 🚀 Overview
 
@@ -287,34 +294,38 @@ Complete documentation is available in the `/docs` folder:
 
 ```text
 ai-podcast-producer/
+├── src/                      # 📦 Core library (NEW)
+│   ├── __init__.py           # Package exports
+│   ├── config.py             # Centralized configuration
+│   └── utils.py              # Shared utility functions
 ├── split_audios.py           # Handles diarization and audio splitting
 ├── generate_subtitles.py     # Generates .srt subtitles and .txt transcription
 ├── analyze_chapters.py       # Analyzes transcript and generates YouTube metadata
 ├── generate_visual_markers.py # Generates visual prompts (images, infographics)
-├── generate_clips.py         # 🎬 Extracts viral and chapter clips from video
-├── sync_to_notion.py         # 📅 Syncs publication calendar to Notion
+├── generate_clips.py         # Extracts viral and chapter clips from video
+├── sync_to_notion.py         # Syncs publication calendar to Notion
 ├── assemble_video.py         # Handles video stitching and editing logic
-├── archive_and_clean.sh      # Archive & clean input/output directories
-├── upload_to_s3.sh           # Upload archives to AWS S3 (optional)
-├── debug_diarization.py      # 🔍 Analyze speaker assignment quality
-├── fix_speaker_assignment.py # 🔧 Fix incorrect speaker assignments
-├── editing_guide.json        # Generated map of cuts (Do not edit manually)
-├── .env                      # API Keys (Excluded from Git)
-├── .env.example              # Template for environment variables
-├── .gitignore                # Git configuration
-├── README.md                 # Main documentation
-├── NOTION_SETUP.md           # 📋 Notion integration setup guide
-├── docs/                     # 📚 Complete documentation
+├── debug_diarization.py      # Analyze speaker assignment quality
+├── fix_speaker_assignment.py # Fix incorrect speaker assignments
+├── scripts/                  # Shell scripts
+│   ├── archive_and_clean.sh  # Archive & clean directories
+│   └── upload_to_s3.sh       # Upload to AWS S3 (optional)
+├── docs/                     # Documentation
 │   ├── TROUBLESHOOTING.md    # Debugging & fixing speaker issues
-│   ├── QUICK_START_DEBUG.md  # Quick debugging guide (3 steps)
-│   ├── SPEAKER_DETECTION_IMPROVEMENTS.md  # Technical details
+│   ├── QUICK_START_DEBUG.md  # Quick debugging guide
 │   └── ARCHIVE_GUIDE.md      # Archive & backup workflow
 ├── input/                    # Input files directory
 ├── output/                   # Output files directory
 │   ├── clips/                # Generated chapter clips
 │   ├── viral_clips/          # Generated viral clips (15-60s)
+│   ├── transcriptions/       # SRT and TXT files
 │   └── metadata/             # Generated metadata and calendars
-└── archives/                 # Local backup archives (git-ignored)
+├── archives/                 # Local backup archives (git-ignored)
+├── pyproject.toml            # Modern Python packaging (NEW)
+├── requirements.txt          # Dependencies
+├── ROADMAP.md                # Project roadmap & future plans (NEW)
+├── .env.example              # Template for environment variables
+└── README.md                 # This file
 ```
 
 ## 🔮 Roadmap
@@ -330,3 +341,5 @@ ai-podcast-producer/
 - [ ] HeyGen API Integration: Automate the video generation and download process
 - [ ] YouTube Publishing: Upload final video via YouTube Data API
 - [ ] Social Media API Integration: Auto-publish clips to TikTok, Instagram, Facebook
+
+**See [ROADMAP.md](ROADMAP.md) for detailed plans, monetization strategies, and architecture proposals.**
